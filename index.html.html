@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turtle Tour Rome — Response Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1A1714; --ink2: #5C5650; --ink3: #9E9990;
+    --gold: #B07D2A; --gold-light: #F9F3E8; --gold-bd: #DEC98A;
+    --cream: #FAF8F4; --white: #FFFFFF;
+    --border: #E8E4DC; --border2: #D0CBC0;
+    --green: #2E6B49; --red: #8B2020; --r: 4px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  .wrapper { max-width: 760px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { display: flex; align-items: center; gap: 18px; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .emblem { width: 52px; height: 52px; border-radius: 50%; background: var(--gold-light); border: 1px solid var(--gold-bd); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+  .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .brand-sub { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
+
+  /* API GATE */
+  .api-gate { background: var(--white); border: 1px solid var(--gold-bd); border-radius: 8px; padding: 28px 32px; margin-bottom: 2rem; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+  .gate-desc { font-size: 13px; color: var(--ink2); line-height: 1.7; margin-bottom: 20px; }
+  .gate-desc a { color: var(--gold); text-decoration: none; font-weight: 500; }
+  .gate-desc a:hover { text-decoration: underline; }
+  .gate-steps { background: var(--cream); border-radius: var(--r); padding: 14px 18px; margin-bottom: 20px; border: 1px solid var(--border); }
+  .gate-steps p { font-size: 12.5px; color: var(--ink2); line-height: 1.75; }
+  .gate-steps p strong { color: var(--ink); }
+  .gate-steps p + p { margin-top: 6px; }
+  .gate-row { display: flex; gap: 8px; }
+  .gate-input { flex: 1; border: 1px solid var(--border2); border-radius: var(--r); padding: 11px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); background: var(--cream); outline: none; transition: border-color .15s; }
+  .gate-input:focus { border-color: var(--gold); background: var(--white); }
+  .gate-input::placeholder { color: var(--ink3); }
+  .gate-err { font-size: 12px; color: var(--red); margin-top: 8px; display: none; }
+  .gate-note { font-size: 11px; color: var(--ink3); margin-top: 10px; line-height: 1.6; }
+
+  /* BUTTONS */
+  .btn-gold { display: flex; align-items: center; gap: 7px; background: var(--gold); color: var(--white); border: none; padding: 11px 22px; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 500; cursor: pointer; transition: opacity .15s; white-space: nowrap; }
+  .btn-gold:hover { opacity: .85; }
+  .btn-primary { display: flex; align-items: center; gap: 8px; background: var(--ink); color: var(--white); border: none; padding: 11px 24px; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: opacity .15s; }
+  .btn-primary:hover { opacity: .82; }
+  .btn-primary:disabled { opacity: .35; cursor: not-allowed; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border2); padding: 11px 16px; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink2); cursor: pointer; transition: background .15s; }
+  .btn-ghost:hover { background: var(--white); }
+  .btn-mini { display: flex; align-items: center; gap: 5px; background: transparent; border: 1px solid var(--gold-bd); padding: 5px 12px; border-radius: var(--r); font-family: 'DM Sans', sans-serif; font-size: 12px; color: var(--ink2); cursor: pointer; transition: all .15s; }
+  .btn-mini:hover { background: var(--white); border-color: var(--ink2); }
+  .btn-mini.ok { color: var(--green); border-color: var(--green); }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* MAIN TOOL */
+  .section-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--ink3); margin-bottom: 8px; }
+  .key-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 20px; background: #EDF7F1; border: 1px solid #A8D9BC; font-size: 11px; color: var(--green); font-weight: 500; margin-bottom: 1.4rem; cursor: pointer; transition: background .15s; }
+  .key-badge:hover { background: #D8F0E4; }
+  .key-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  textarea { width: 100%; border: 1px solid var(--border2); border-radius: var(--r); padding: 14px 16px 36px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--ink); background: var(--white); resize: vertical; min-height: 120px; line-height: 1.65; outline: none; transition: border-color .15s; }
+  textarea:focus { border-color: var(--gold); }
+  textarea::placeholder { color: var(--ink3); }
+  .meta-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .char { font-size: 11px; color: var(--ink3); }
+  .kbd { font-size: 11px; color: var(--ink3); font-style: italic; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+
+  /* RESPONSE CARD */
+  .resp-section { margin-top: 1.5rem; }
+  .resp-card { border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; background: var(--white); box-shadow: 0 1px 4px rgba(0,0,0,.04); }
+  .card-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; background: var(--gold-light); border-bottom: 1px solid var(--gold-bd); }
+  .status { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 500; color: var(--ink2); text-transform: uppercase; letter-spacing: .07em; }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+  .dot.busy { background: var(--gold); animation: pulse 1.1s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.25} }
+  .card-acts { display: flex; gap: 6px; }
+  .resp-text { padding: 20px 22px; font-size: 14.5px; line-height: 1.85; color: var(--ink); white-space: pre-wrap; word-break: break-word; min-height: 64px; }
+
+  /* INFO BAR */
+  .info-bar { display: flex; gap: 10px; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--r); background: var(--white); margin-top: 1.2rem; }
+  .info-icon { color: var(--ink3); flex-shrink: 0; margin-top: 2px; font-size: 13px; }
+  .info-text { font-size: 12px; color: var(--ink2); line-height: 1.65; }
+  .info-text strong { color: var(--ink); }
+
+  /* HISTORY */
+  .divider { height: 1px; background: var(--border); margin: 1.8rem 0; }
+  .hist-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .btn-clr { background: transparent; border: none; font-size: 11px; color: var(--ink3); cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .btn-clr:hover { color: var(--red); }
+  .hist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media(max-width:520px) { .hist-grid { grid-template-columns: 1fr; } }
+  .hist-item { padding: 10px 13px; border: 1px solid var(--border); border-radius: var(--r); cursor: pointer; background: var(--white); transition: background .12s; overflow: hidden; }
+  .hist-item:hover { background: var(--gold-light); }
+  .hist-lbl { font-size: 10px; color: var(--ink3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 3px; }
+  .hist-q { font-size: 12.5px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* MODAL */
+  .overlay { display: none; position: fixed; inset: 0; background: rgba(26,23,20,.55); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .overlay.show { display: flex; }
+  .modal { background: var(--white); border-radius: 8px; padding: 28px 32px; max-width: 460px; width: 100%; box-shadow: 0 8px 32px rgba(0,0,0,.18); }
+  .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+  .modal-desc { font-size: 13px; color: var(--ink2); line-height: 1.65; margin-bottom: 16px; }
+  .modal-input { width: 100%; border: 1px solid var(--border2); border-radius: var(--r); padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink); outline: none; transition: border-color .15s; margin-bottom: 12px; }
+  .modal-input:focus { border-color: var(--gold); }
+  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-err { font-size: 12px; color: var(--red); margin-bottom: 10px; display: none; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="emblem">🐢</div>
+    <div>
+      <div class="brand-name">Turtle Tour Rome</div>
+      <div class="brand-sub">Customer Response Generator &nbsp;·&nbsp; Staff Tool</div>
+    </div>
+  </div>
+
+  <div class="api-gate" id="apiGate">
+    <div class="gate-title">🔑 One-time setup — enter your Google API Key</div>
+    <div class="gate-desc">
+      This tool runs on Google's free AI (Gemini). You need a free API key — no payment required, just a Google account.
+    </div>
+    <div class="gate-steps">
+      <p><strong>Step 1 —</strong> Go to <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com/app/apikey</a></p>
+      <p><strong>Step 2 —</strong> Click <strong>"Create API Key"</strong> and copy it</p>
+      <p><strong>Step 3 —</strong> Paste it below and click <strong>Save & Start</strong></p>
+    </div>
+    <div class="gate-row">
+      <input class="gate-input" type="password" id="apiKeyInput" placeholder="AIzaSy…" autocomplete="off" />
+      <button class="btn-gold" onclick="saveKey()">Save &amp; Start →</button>
+    </div>
+    <div class="gate-err" id="gateErr">Key doesn't look right — Google Gemini keys start with <strong>AIza</strong></div>
+    <div class="gate-note">🔒 Your key is securely stored in your browser's local storage. It is never saved to a server or shared with anyone.</div>
+  </div>
+
+  <div id="mainTool" style="display:none">
+
+    <div class="key-badge" onclick="changeKey()" title="Click to update API key">
+      <div class="key-dot"></div> Gemini API active &nbsp;·&nbsp; click to change key
+    </div>
+
+    <div class="section-label">Customer question or message</div>
+    <textarea id="qInput" placeholder="Paste the customer's exact message here… Include placeholders like [Requested Date] if you need the AI to fill them in contextually." oninput="countChars()"></textarea>
+    <div class="meta-row">
+      <span class="char" id="charCount">0 characters</span>
+      <span class="kbd">⌘ / Ctrl + Enter to generate</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" id="genBtn" onclick="generate()">✦ Generate Response</button>
+      <button class="btn-ghost" onclick="clearAll()">Clear</button>
+    </div>
+
+    <div class="resp-section" id="respSection" style="display:none">
+      <div class="resp-card">
+        <div class="card-top">
+          <div class="status"><div class="dot" id="statusDot"></div><span id="statusTxt">Ready to copy</span></div>
+          <div class="card-acts">
+            <button class="btn-mini" onclick="generate()">↺ Regenerate</button>
+            <button class="btn-mini" id="copyBtn" onclick="copyResp()">⎘ Copy</button>
+          </div>
+        </div>
+        <div class="resp-text" id="respText"></div>
+      </div>
+    </div>
+
+    <div class="info-bar">
+      <span class="info-icon">◈</span>
+      <div class="info-text">
+        <strong>CRM intelligence active:</strong> Rules for empathy, firm cancellation policies, B2B logic, logistics (narrow streets, Hilton EUR), and finite wording guardrails are deeply integrated. Powered by Google Gemini.
+      </div>
+    </div>
+
+    <div id="histSec" style="display:none">
+      <div class="divider"></div>
+      <div class="hist-bar">
+        <div class="section-label" style="margin-bottom:0">Session history</div>
+        <button class="btn-clr" onclick="clearHist()">Clear all</button>
+      </div>
+      <div class="hist-grid" id="histGrid"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="overlay" id="keyOverlay">
+  <div class="modal">
+    <div class="modal-title">Update API Key</div>
+    <div class="modal-desc">Get your free key at <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold)">aistudio.google.com/app/apikey</a> — no payment needed.</div>
+    <div class="modal-err" id="modalErr">Key doesn't look right — Gemini keys start with <strong>AIza</strong></div>
+    <input class="modal-input" type="password" id="modalKeyInput" placeholder="AIzaSy…" autocomplete="off" />
+    <div class="modal-btns">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-gold" onclick="saveModalKey()">Save Key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'turtle_tour_gemini_api_key';
+let API_KEY = localStorage.getItem(STORAGE_KEY) || '';
+let history = [];
+
+const SYSTEM_PROMPT = `You are the customer communication specialist for Turtle Tour Rome, an award-winning private tour company in Rome, Italy. You write responses that are warm, intelligent, commercially savvy, and ready to send — no editing required by the team.
+
+Your primary intelligence comes from real customer interactions and strict operational templates. Apply the FINITE LANGUAGE guardrails to these scenarios to ensure responses are elegant but definitive.
+
+════════════════════════════════════════════════════
+SCENARIO PROTOCOLS (HOW TO HANDLE SPECIFIC REQUESTS)
+════════════════════════════════════════════════════
+
+1. NEW B2B PARTNERS INQUIRY:
+When a new partner or agency reaches out:
+- Thank them warmly.
+- State: "Please find attached the 2026 NET rates."
+- Key facts to include organically: Prices are per cart (3-seater or 5-seater) and include a guide. All tours are private and customizable. 
+- Times: Flexible. Morning 9-10am, afternoon 3-4pm. Evening 2-hour tour at 8pm (can start at 7:30pm).
+- Restrictions: No Appian Way or Food tour on Sunday/Monday. (Also no Food tour on Sundays). Appian Way MUST start in the morning (catacombs close after lunch).
+- Process: Book via email (always cc bookings.turtletourrome@gmail.com). Full prepayment required via wire transfer or CC (invoice issued right after). 48-hour cancellation policy.
+
+2. LOGISTICS & PICKUPS:
+- NORMAL CONFIRMATION: Use "Confirming your pick-up location and time for the upcoming tour:" Then list Location and Time cleanly. Ask them to advise of any changes.
+- NO ADDRESS PROVIDED: "It seems the booking doesn’t include a pick-up address. Please provide the exact street name and building number within the historic center."
+- NARROW / PEDESTRIAN STREET: Explain that the golf cart cannot access their accommodation directly. Provide a meeting point a short walk away. Format: "Please meet your guide at [Meeting Point] just a [X]-minute walk away. Here is the map link: [Link]."
+- OUT OF REACH HOTEL (e.g., Hilton in EUR): Explain they are outside the historic center (beyond ZIPs 00183, 00184, 00187) and do not qualify for direct pickup. Offer 2 specific meeting points:
+   Option A: Piazza Mattei (Turtle Fountain) [link] — ideal if taking a taxi.
+   Option B: [Relevant Metro Station] [link] — ideal if taking the metro.
+
+3. REFUNDS & APPROVED CANCELLATIONS:
+- Lead with deep empathy ("We are so sorry to hear this...").
+- Confirm the cancellation and full refund immediately ("Confirming your tour is canceled and a full refund is being processed").
+- Note that refunds take a few business days depending on the payment method.
+- Warmly invite them back in the future under better circumstances.
+
+4. DENYING CANCELLATIONS (PAST CUTOFF):
+- The policy is strict, but the tone must remain hospitable and firm. DO NOT use aggressive phrasing like "For no reason whatsoever". 
+- FOR DIRECT WEBSITE BOOKINGS (Past 48h): Acknowledge their situation politely, but state clearly that the request falls outside the 48-hour cancellation policy accepted at booking. State that the tour remains confirmed for [Date/Time].
+- FOR VIATOR/GETYOURGUIDE (Past 24h): Acknowledge politely, state clearly that the request falls outside the platform's strict 24-hour cancellation policy accepted at booking. State that the tour remains confirmed for [Date/Time].
+
+════════════════════════════════════════════════════
+CORE COMMUNICATION RULES
+════════════════════════════════════════════════════
+- REFRAME, DON'T REFUSE: If fully booked, redirect to a trusted partner or new date immediately. If an itinerary item isn't possible, reframe to what IS possible. 
+- LEAD WITH THE PERSON: Empathy first in times of distress.
+- WARM CONFIRMATIONS: Every confirmation is a hospitality moment.
+
+════════════════════════════════════════════════════
+LANGUAGE GUARDRAILS — APPLY AUTOMATICALLY
+════════════════════════════════════════════════════
+"Please use" not "You are welcome to use"
+"Confirming" not "We are pleased to inform you"
+"Meet at" not "Kindly note the meeting point is"
+"Tour starts at" not "Please be advised the tour will start at"
+"Arrive at" not "We kindly ask that you arrive at"
+"Bring" not "It would be appreciated if you could bring"
+"Reminder:" not "We would like to remind you that"
+"You will see" not "You will be able to see"
+"Guide waiting at" not "The guide will be waiting for you at"
+"To start the tour" not "In order to begin the tour"
+"Contact us at" not "Please feel free to contact us at"
+"Wear" not "We recommend that you wear"
+"Tour includes" not "The tour includes the following"
+"Note:" not "Please take note that"
+
+════════════════════════════════════════════════════
+RESPONSE FORMAT — CRITICAL
+════════════════════════════════════════════════════
+Output ONLY the customer-facing reply. No preamble, no explanation.
+Write in flowing prose. No bullet points unless providing options (like meeting points).
+Write as the team: "we", "our", "us" — never "I".
+End with one warm, clear sentence that invites the natural next step.
+Leave placeholders like [Insert Link] or [Date] if specific data wasn't provided in the prompt.`;
+
+/* ── INITIALIZATION ── */
+window.onload = () => {
+  if (API_KEY) {
+    document.getElementById('apiGate').style.display = 'none';
+    document.getElementById('mainTool').style.display = 'block';
+  }
+};
+
+/* ── KEY MANAGEMENT ── */
+function saveKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (!val.startsWith('AIza')) {
+    document.getElementById('gateErr').style.display = 'block';
+    return;
+  }
+  API_KEY = val;
+  localStorage.setItem(STORAGE_KEY, val);
+  document.getElementById('apiGate').style.display = 'none';
+  document.getElementById('mainTool').style.display = 'block';
+}
+
+document.getElementById('apiKeyInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveKey();
+});
+
+function changeKey() {
+  document.getElementById('modalKeyInput').value = API_KEY;
+  document.getElementById('modalErr').style.display = 'none';
+  document.getElementById('keyOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('modalKeyInput').focus(), 80);
+}
+
+function saveModalKey() {
+  const val = document.getElementById('modalKeyInput').value.trim();
+  if (!val.startsWith('AIza')) {
+    document.getElementById('modalErr').style.display = 'block';
+    return;
+  }
+  API_KEY = val;
+  localStorage.setItem(STORAGE_KEY, val);
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('keyOverlay').classList.remove('show');
+}
+
+document.getElementById('keyOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('keyOverlay')) closeModal();
+});
+
+document.getElementById('modalKeyInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') saveModalKey();
+  if (e.key === 'Escape') closeModal();
+});
+
+/* ── MAIN TOOL ── */
+function countChars() {
+  document.getElementById('charCount').textContent = document.getElementById('qInput').value.length + ' characters';
+}
+
+function clearAll() {
+  document.getElementById('qInput').value = '';
+  document.getElementById('charCount').textContent = '0 characters';
+  document.getElementById('respSection').style.display = 'none';
+}
+
+async function generate() {
+  const q = document.getElementById('qInput').value.trim();
+  if (!q) return;
+  if (!API_KEY) { alert('Please enter your API key first.'); return; }
+
+  const btn     = document.getElementById('genBtn');
+  const section = document.getElementById('respSection');
+  const text    = document.getElementById('respText');
+  const dot     = document.getElementById('statusDot');
+  const stxt    = document.getElementById('statusTxt');
+  const copy    = document.getElementById('copyBtn');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Generating…';
+  section.style.display = 'block';
+  text.textContent = '';
+  dot.className = 'dot busy';
+  dot.style.background = '';
+  stxt.textContent = 'Writing…';
+  copy.className = 'btn-mini';
+  copy.innerHTML = '⎘ Copy';
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${API_KEY}`;
+
+  const body = {
+    system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+    contents: [{ role: 'user', parts: [{ text: q }] }],
+    generationConfig: { maxOutputTokens: 1024, temperature: 0.5 }
+  };
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || 'API error ' + res.status);
+    }
+
+    const reader  = res.body.getReader();
+    const decoder = new TextDecoder();
+    let full = '';
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop(); 
+
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const d = line.slice(6).trim();
+        if (!d || d === '[DONE]') continue;
+        try {
+          const p = JSON.parse(d);
+          const chunk = p?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (chunk) {
+            full += chunk;
+            text.textContent = full;
+          }
+        } catch(e) {}
+      }
+    }
+
+    if (!full) throw new Error('Empty response received — please try again.');
+
+    dot.className = 'dot';
+    stxt.textContent = 'Ready to copy';
+    btn.disabled = false;
+    btn.innerHTML = '✦ Generate Response';
+    history.unshift({ q, r: full });
+    if (history.length > 6) history.pop();
+    renderHistory();
+
+  } catch(err) {
+    text.textContent = '⚠ ' + (err.message || 'Something went wrong — please try again.');
+    dot.className = 'dot';
+    dot.style.background = 'var(--red)';
+    stxt.textContent = 'Error';
+    btn.disabled = false;
+    btn.innerHTML = '✦ Generate Response';
+  }
+}
+
+function copyResp() {
+  const t = document.getElementById('respText').textContent;
+  if (!t || t.startsWith('⚠')) return;
+  navigator.clipboard.writeText(t).then(() => {
+    const b = document.getElementById('copyBtn');
+    b.className = 'btn-mini ok';
+    b.innerHTML = '✓ Copied!';
+    setTimeout(() => { b.className = 'btn-mini'; b.innerHTML = '⎘ Copy'; }, 2200);
+  });
+}
+
+function renderHistory() {
+  const sec  = document.getElementById('histSec');
+  const grid = document.getElementById('histGrid');
+  if (!history.length) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  grid.innerHTML = history.map((h, i) => `
+    <div class="hist-item" onclick="loadH(${i})">
+      <div class="hist-lbl">Past question</div>
+      <div class="hist-q">${h.q.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    </div>`).join('');
+}
+
+function loadH(i) {
+  const h = history[i];
+  document.getElementById('qInput').value = h.q;
+  countChars();
+  document.getElementById('respSection').style.display = 'block';
+  document.getElementById('respText').textContent = h.r;
+  document.getElementById('statusDot').className = 'dot';
+  document.getElementById('statusDot').style.background = '';
+  document.getElementById('statusTxt').textContent = 'Ready to copy';
+}
+
+function clearHist() { history = []; renderHistory(); }
+
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') generate();
+});
+</script>
+</body>
+</html>
