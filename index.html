@@ -1,146 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Turtle Tour Rome — CRM Tool</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --ink: #1A1714; --ink2: #5C5650; --ink3: #9E9990;
-    --gold: #B07D2A; --gold-light: #F9F3E8; --gold-bd: #DEC98A;
-    --cream: #FAF8F4; --white: #FFFFFF;
-    --border: #E8E4DC; --border2: #D0CBC0;
-    --green: #2E6B49; --red: #8B2020; --r: 4px;
-  }
-  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 2rem 1rem 4rem; }
-  .wrapper { max-width: 760px; margin: 0 auto; }
-  .header { display: flex; align-items: center; gap: 18px; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
-  .emblem { width: 52px; height: 52px; border-radius: 50%; background: var(--gold-light); border: 1px solid var(--gold-bd); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
-  .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--ink); line-height: 1.1; }
-  .brand-sub { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
-  .api-gate { background: var(--white); border: 1px solid var(--gold-bd); border-radius: 8px; padding: 32px; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,.05); }
-  .gate-row { display: flex; gap: 10px; margin-top: 20px; }
-  .gate-input { flex: 1; border: 1px solid var(--border2); border-radius: var(--r); padding: 12px 16px; font-family: inherit; font-size: 14px; outline: none; background: var(--cream); }
-  .btn-gold { background: var(--gold); color: var(--white); border: none; padding: 12px 24px; border-radius: var(--r); font-weight: 500; cursor: pointer; }
-  textarea { width: 100%; border: 1px solid var(--border2); border-radius: var(--r); padding: 18px; font-family: inherit; font-size: 15px; min-height: 160px; line-height: 1.6; outline: none; margin-bottom: 15px; }
-  .btn-primary { background: var(--ink); color: var(--white); border: none; padding: 14px 28px; border-radius: var(--r); font-size: 15px; font-weight: 500; cursor: pointer; }
-  .resp-section { margin-top: 2rem; display: none; }
-  .resp-card { border: 1px solid var(--gold-bd); border-radius: var(--r); background: var(--white); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-  .card-top { background: var(--gold-light); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold-bd); }
-  .resp-text { padding: 25px; font-size: 15px; line-height: 1.85; color: var(--ink); white-space: pre-wrap; }
-  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle CRM | Tour Operations</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "@google/generative-ai": "https://esm.run/@google/generative-ai"
+        }
+      }
+    </script>
+    <style>
+        :root {
+            --turtle-green: #2d5a27;
+            --turtle-light: #f4f7f4;
+            --turtle-gold: #c5a059;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--turtle-light);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 800px;
+            border-top: 8px solid var(--turtle-green);
+        }
+        h1 { color: var(--turtle-green); margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        .setup-section {
+            background: #fff9e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #ffeeba;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            box-sizing: border-box;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: var(--turtle-green);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover { background-color: #1e3d1a; }
+        #output {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 5px solid var(--turtle-gold);
+            white-space: pre-wrap;
+            display: none;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--turtle-gold);
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+        .loading { display: none; color: var(--turtle-green); font-weight: bold; }
+    </style>
 </head>
 <body>
 
-<div class="wrapper">
-  <div class="header">
-    <div class="emblem">🐢</div>
-    <div>
-      <div class="brand-name">Turtle Tour Rome</div>
-      <div class="brand-sub">CRM Intelligence (Sheet 2 Priority)</div>
+<div class="container">
+    <h1>🐢 Turtle CRM Operations</h1>
+    
+    <div class="setup-section" id="setupSection">
+        <label><strong>System Setup:</strong> Enter API Key</label>
+        <input type="password" id="apiKey" placeholder="AIzaSy..." style="width: 100%; padding: 8px; margin-top: 5px;">
+        <p style="font-size: 12px; color: #666;">Key is stored locally in your browser.</p>
     </div>
-  </div>
 
-  <div class="api-gate" id="apiGate">
-    <div style="font-family:'Cormorant Garamond', serif; font-size:22px; font-weight:600;">System Setup</div>
-    <p style="font-size: 14px; color: var(--ink2);">Paste your API Key from the 'Turtle CRM' Project.</p>
-    <div class="gate-row">
-      <input class="gate-input" type="password" id="apiKeyInput" placeholder="AIzaSy...">
-      <button class="btn-gold" onclick="saveKey()">Connect Engine →</button>
+    <label><strong>Paste Customer Request:</strong></label>
+    <textarea id="userInput" placeholder="Paste the email or message from the client here..."></textarea>
+    
+    <button onclick="generateResponse()">Generate Professional Draft</button>
+    <span class="loading" id="loadingText">Processing with Empathy...</span>
+
+    <div id="output">
+        <button class="copy-btn" onclick="copyText()">Copy Draft</button>
+        <div id="responseText"></div>
     </div>
-  </div>
-
-  <div id="mainTool" style="display:none">
-    <div class="btn-mini" style="font-size: 10px; cursor:pointer; color:var(--gold); margin-bottom:10px" onclick="resetKey()">● Update API Key</div>
-    <textarea id="qInput" placeholder="Paste customer inquiry..."></textarea>
-    <button class="btn-primary" id="genBtn" onclick="generate()">✦ Generate CRM Response</button>
-
-    <div class="resp-section" id="respSection">
-      <div class="resp-card">
-        <div class="card-top">
-          <span style="font-size:11px; font-weight:700; color:var(--gold);">SHEET 2 TRANSFORMATION</span>
-          <button style="background:var(--white); border:1px solid var(--gold-bd); padding:5px 12px; cursor:pointer; font-size:12px; border-radius:4px;" onclick="copyResp()">Copy</button>
-        </div>
-        <div class="resp-text" id="respText"></div>
-      </div>
-    </div>
-  </div>
 </div>
 
-<script>
-const SYSTEM_PROMPT = `Lead CRM Specialist for Turtle Tour Rome. 
-PRIORITY (Sheet 2): 
-1. Reframe refusals (No outright NO). 
-2. Lead with empathy for trouble/accidents. 
-3. Warm confirmations ("Happy to"). 
-4. PRICING: Use € symbol with placeholders [Insert Price]. NO hardcoded numbers.
-FINITE WORDING: Use "Confirming", "Meet at", "Note:".`;
+<script type="module">
+    import { GoogleGenerativeAI } from "@google/generative-ai";
 
-let API_KEY = localStorage.getItem('turtle_key_v3') || '';
-if (API_KEY) {
-  document.getElementById('apiGate').style.display = 'none';
-  document.getElementById('mainTool').style.display = 'block';
-}
+    // Load saved key
+    const savedKey = localStorage.getItem('turtle_api_key');
+    if (savedKey) { document.getElementById('apiKey').value = savedKey; }
 
-function saveKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  if (val) { localStorage.setItem('turtle_key_v3', val); location.reload(); }
-}
+    window.generateResponse = async function() {
+        const key = document.getElementById('apiKey').value;
+        const input = document.getElementById('userInput').value;
+        const loading = document.getElementById('loadingText');
+        const output = document.getElementById('output');
+        const responseDiv = document.getElementById('responseText');
 
-function resetKey() { localStorage.removeItem('turtle_key_v3'); location.reload(); }
+        if (!key) { alert("Please enter your API key first."); return; }
+        if (!input) { alert("Please paste a customer request."); return; }
 
-async function generate() {
-  const q = document.getElementById('qInput').value.trim();
-  if (!q) return;
-  const btn = document.getElementById('genBtn');
-  const text = document.getElementById('respText');
-  btn.disabled = true;
-  btn.innerHTML = '<div class="spinner"></div> Connecting...';
-  document.getElementById('respSection').style.display = 'block';
-  text.innerText = "Attempting secure handshake with Google Cloud...";
+        // Save key for next time
+        localStorage.setItem('turtle_api_key', key);
+        
+        loading.style.display = "inline";
+        output.style.display = "none";
 
-  // Attempt 1: Stable v1 (Standard)
-  // Attempt 2: v1beta (Alternative)
-  // Attempt 3: Flash-8b (Lightweight fallback)
-  const configs = [
-    { url: 'v1/models/gemini-1.5-flash', body: { contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nInquiry: " + q }] }] } },
-    { url: 'v1beta/models/gemini-1.5-flash', body: { contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nInquiry: " + q }] }] } },
-    { url: 'v1beta/models/gemini-pro', body: { contents: [{ parts: [{ text: SYSTEM_PROMPT + "\n\nInquiry: " + q }] }] } }
-  ];
+        try {
+            const genAI = new GoogleGenerativeAI(key);
+            // Switched to 1.5-pro for better initial connection stability
+            const model = genAI.getGenerativeModel({ 
+                model: "gemini-1.5-pro",
+                systemInstruction: "You are the head of operations for Turtle Tour Social in Rome. Rules: 1. Priority: Use empathy first (Sheet 2 logic). If a guest has an issue or injury, lead with care. 2. Reframing: Never say a flat 'No'. Reframe refusals as helpful alternatives. 3. Hilton Rome EUR: This is out of zone. If they ask for pickup there, explain the golf carts cannot reach it but suggest a taxi to Piazza Mattei. 4. Pricing: Use the € symbol but do not include fixed numbers; leave as €[price] for staff to fill. 5. Style: Professional, warm, and finite. Use phrases like 'Meet at' and 'Confirming'."
+            });
 
-  let success = false;
-  for (const config of configs) {
-    if (success) break;
-    try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/${config.url}:generateContent?key=${API_KEY}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(config.body)
-      });
-      const data = await response.json();
-      if (response.ok) {
-        text.innerText = data.candidates[0].content.parts[0].text;
-        success = true;
-      }
-    } catch (e) { console.log("Trying next path..."); }
-  }
+            const result = await model.generateContent(input);
+            const response = await result.response;
+            const text = response.text();
+            
+            responseDiv.innerText = text;
+            output.style.display = "block";
+        } catch (error) {
+            console.error(error);
+            responseDiv.innerHTML = `<span style="color:red;">⚠️ CONNECTION ERROR: Still cannot find the AI model.<br><br>FINAL FIX:<br>1. Go to APIs & Services > Library.<br>2. Ensure 'Generative Language API' is ENABLED for project 'Turtle CRM Final'.<br>3. Wait 2 minutes and try again.</span>`;
+            output.style.display = "block";
+        } finally {
+            loading.style.display = "none";
+        }
+    }
 
-  if (!success) {
-    text.innerText = "⚠️ CONNECTION ERROR: Still cannot find the AI model.\n\nFINAL FIX:\n1. Go to APIs & Services > Credentials in Google Cloud.\n2. Click your API Key.\n3. Under 'API Restrictions', select 'Don't restrict key' OR ensure 'Generative Language API' is checked.\n4. Wait 2 minutes and try again.";
-  }
-  btn.disabled = false;
-  btn.innerHTML = '✦ Generate CRM Response';
-}
-
-function copyResp() {
-  navigator.clipboard.writeText(document.getElementById('respText').innerText);
-  alert("Copied!");
-}
+    window.copyText = function() {
+        const text = document.getElementById('responseText').innerText;
+        navigator.clipboard.writeText(text);
+        alert("Draft copied to clipboard!");
+    }
 </script>
+
 </body>
 </html>
