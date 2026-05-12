@@ -5,6 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Turtle CRM | Operations Desk</title>
     <style>
+        :root { --t-green: #1a3a1a; --t-gold: #b08d57; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f8f9fa; display: flex; justify-content: center; padding: 40px; color: #212529; }
+        .container { background: white; padding: 40px; border-radius: 4px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); width: 100%; max-width: 750px; border-top: 4px solid var(--t-green); }
+        h2 { text-transform: uppercase; letter-spacing: 2px; font-weight: 400; font-size: 18px; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .key-input { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 2px; font-size: 13px; }
+        textarea { width: 100%; height: 180px; padding: 15px; border: 1px solid #ddd; border-radius: 2px; box-sizing: border-box; font-size: 15px; margin-bottom: 20px; line-height: 1.6; }
+        button { background: var(--t-green); color: white; padding: 14px; border: none; cursor: pointer; width: 100%; text-transform: uppercase; font-weight: 600; letter-spacing: 1px; }
+        #output { margin-top: 30px; padding: 25px; border: 1px solid #eee; background: #fafafa; display: none; position: relative; font-size: 15px; line-height: 1.6; }
+        .copy { position: absolute; top: 10px; right: 10px; font-size: 11px; background: #eee; border: 1px solid #ccc; padding: 4px 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Operations Communication Desk</h2>
+    <input type="password" id="apiKey" class="key-input" placeholder="System API Key" onchange="localStorage.setItem('t_key', this.value)">
+    <textarea id="userInput" placeholder="Paste incoming guest message..."></textarea>
+    <button onclick="generate()">Generate Formal Draft</button>
+    <div id="output">
+        <div onclick="copyText()" class="copy">COPY DRAFT</div>
+        <div id="responseText"></div>
+    </div>
+</div>
+
+<script>
+    window.onload = () => { document.getElementById('apiKey').value = localStorage.getItem('t_key') || ''; };
+
+    async function generate() {
+        const key = document.getElementById('apiKey').value;
+        const input = document.getElementById('userInput').value;
+        const out = document.getElementById('output');
+        const resDiv = document.getElementById('responseText');
+
+        if(!key || !input) return alert("System Key and Message Required.");
+
+        out.style.display = "block";
+        resDiv.innerText = "Drafting...";
+
+        const prompt = `Role: Senior Operations Manager at Turtle Tour Social.
+Tone: Formal, Concise, Executive. Use "British/International Business English". 
+
+MANDATORY CONSTRAINTS:
+- EMOTION: Do not use overly personal or sympathetic language. Limit apology/concern to one short formal sentence (e.g., "We are sorry to hear of your husband's injury.")
+- NO ITALIAN: Zero Italian words allowed. English only.
+- NO NUMBERS: You are prohibited from including prices or numerical balances. Use the exact placeholder: €[price].
+- POLICY (Hilton EUR): State clearly that this location is outside the golf cart operational zone. Direct the guest to take a taxi to Piazza Mattei.
+- STYLE: Avoid "chatty" fillers. Be direct and efficient.`;
+
+        try {
+            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "llama-3.3-70b-versatile",
+                    messages: [{role:"system", content: prompt}, {role:"user", content: input}],
+                    temperature: 0.0 // Absolute precision
+                })
+            });
+            const data = await response.json();
+            resDiv.innerText = data.choices[0].message.content.trim();
+        } catch (e) {
+            resDiv.innerText = "System Error: Verify API Key.";
+        }
+    }
+
+    function copyText() {
+        navigator.clipboard.writeText(document.getElementById('responseText').innerText);
+        alert("Draft Copied.");
+    }
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtle CRM | Operations Desk</title>
+    <style>
         :root { --turtle-green: #2d5a27; --turtle-light: #f4f7f4; --turtle-gold: #c5a059; }
         body { font-family: 'Segoe UI', sans-serif; background-color: var(--turtle-light); margin: 0; display: flex; justify-content: center; padding: 20px; }
         .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 800px; border-top: 8px solid var(--turtle-green); }
