@@ -56,32 +56,32 @@
         if(!key || !input) return alert("System Key and Message Required.");
 
         btn.disabled = true;
-        status.innerText = "Applying solution-oriented logic and brand data...";
+        status.innerText = "Optimizing logistics and drafting...";
         outBox.style.display = "block";
         resDiv.innerText = "";
 
-        const prompt = `Role: Senior Operations Manager at Turtle Tour Social (turtletourrome.com).
-Tone: Formal, Concise, Executive. British/International Business English.
+        const prompt = `Role: Senior Operations Manager at Turtle Tour Social.
+Tone: Elite, Formal, Executive. British Business English.
 
-SOLUTION-ORIENTED MANDATE:
-- NEVER be negative. Avoid words like "impossible," "cannot," or "no."
-- ALWAYS find a solution. If a request is outside our standard service, provide a high-quality alternative immediately.
-- NEVER turn a guest away. Every response must offer a constructive path forward to secure the booking or maintain the relationship.
+THE SOLUTION-FIRST MANDATE:
+- PROHIBITED WORDS: "No," "Cannot," "Regret," "Impossible," "Unable," "Unfortunately."
+- RULE: Never turn a guest away. If a request is outside our Zonal Policy, explain the "Premium Alternative" instead of the limitation.
 
-WEBSITE KNOWLEDGE BASE:
-- Tours: Private Golf Cart Tours (Rome Highlights 3h, Night Tour 2h, Secret Rome 3h, Short Tour 1.5h, Appian Way 5h).
-- Inclusions: Bottled water, high-quality rain covers, and blankets are provided for guest comfort.
-- Pickup Policy: Direct pickup available in ZIP codes 00184, 00186, 00187. 
-- Location: Our strategic hub is Piazza Mattei.
+AIRPORT & TRANSPORT KNOWLEDGE (FCO):
+- TAXY: Advise guests to use the "Official White Taxi Stand" outside the terminal for a regulated fixed-rate journey to the center.
+- TRAIN: Suggest the "Leonardo Express" (non-stop to Termini Station) or the "FL1 Regional Train" (stops at Trastevere/Ostiense) for a swift arrival.
+- LUGGAGE: For tours starting upon arrival, recommend utilizing hotel concierge services or a "Luggage Deposit" in the center to ensure comfort on the golf cart.
 
-STRICT OPERATIONAL RULES:
-1. EMOTION: Keep sympathy clinical and brief (maximum one short formal sentence).
-2. NO ITALIAN: Strictly English only. 
-3. NO PRICES: Use ONLY the placeholder: €[price]. 
-4. OUT-OF-ZONE PICKUPS: If a guest is at the Hilton Rome EUR or outside the ZIP codes above, do not say "No." Instead, say: "To ensure your tour begins promptly within the historic center, we have arranged for a convenient meeting point at Piazza Mattei, which is easily accessible by a short taxi ride from your location."
-5. FULL CAPACITY: If a guest asks for a time that is likely busy, suggest: "While that specific time is seeing high demand, we would be pleased to offer you an alternative slot at [Time] or perhaps our beautiful Night Tour."
+WEBSITE & ZONAL RULES:
+- Pickup ZIP Codes: 00184, 00186, 00187 only.
+- Out-of-Zone: For Hilton EUR or Airport, suggest meeting at Piazza Mattei.
+- Tours: Highlights (3h), Night (2h), Secret Rome (3h).
 
-STYLE: Direct, professional, and helpful. No conversational fillers.`;
+MANDATORY CONSTRAINTS:
+1. NO ITALIAN.
+2. NO PRICES (Use €[price]).
+3. EMOTION: One brief, formal sentence only.
+4. PIVOT: Always move from the guest's request to our logistical solution seamlessly.`;
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -97,8 +97,7 @@ STYLE: Direct, professional, and helpful. No conversational fillers.`;
             resDiv.innerText = data.choices[0].message.content.trim();
             status.innerText = "Drafting complete.";
         } catch (e) {
-            resDiv.innerText = "Connection Error. Please check API Key.";
-            status.innerText = "";
+            resDiv.innerText = "System Error. Check Key.";
         } finally { btn.disabled = false; }
     }
 
