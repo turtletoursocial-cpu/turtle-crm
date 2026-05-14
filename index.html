@@ -42,6 +42,7 @@
         const savedKey = localStorage.getItem('t_key');
         if (savedKey) document.getElementById('apiKey').value = savedKey; 
     };
+
     function saveKey() { localStorage.setItem('t_key', document.getElementById('apiKey').value); }
 
     async function generate() {
@@ -52,19 +53,37 @@
         const btn = document.getElementById('mainBtn');
         const status = document.getElementById('status');
 
-        if(!key || !input) return alert("Key and Message Required.");
+        if(!key || !input) return alert("System Key and Message Required.");
 
         btn.disabled = true;
-        status.innerText = "Applying brand guidelines...";
+        status.innerText = "Applying guideline logic and drafting...";
         outBox.style.display = "block";
         resDiv.innerText = "";
 
-        const prompt = `Role: Senior Operations Manager. Tone: Elite, Formal, Executive British English.
-        Mandate: This is a GUIDELINE. Provide a professional framework for the user to refine.
-        - PROHIBITED: "No", "Cannot", "Regret", "Unfortunately".
-        - SOLUTION-FIRST: Always pivot to Piazza Mattei or high-end transport alternatives.
-        - NO ITALIAN.
-        - NO PRICES: Use €[price].`;
+        const prompt = `Role: Senior Operations Manager at Turtle Tour Social.
+Tone: Elite, Formal, Executive. British Business English.
+
+GUIDELINE MANDATE:
+- This output is a framework for the team to use, not a final copy-paste reply. Make it sound like a highly polished draft.
+- PROHIBITED WORDS: "No," "Cannot," "Regret," "Impossible," "Unable," "Unfortunately."
+- SOLUTION-FIRST: Never turn a guest away. If a request is outside our Zonal Policy, explain the "Premium Alternative" instead of the limitation.
+
+AIRPORT & TRANSPORT KNOWLEDGE (FCO):
+- TAXI: Advise guests to use the "Official White Taxi Stand" outside the terminal for a regulated fixed-rate journey to the center.
+- TRAIN: Suggest the "Leonardo Express" (non-stop to Termini Station) or the "FL1 Regional Train" (stops at Trastevere/Ostiense) for a swift arrival.
+- LUGGAGE: For tours starting upon arrival, recommend utilizing hotel concierge services or a "Luggage Deposit" in the center to ensure comfort on the golf cart.
+
+WEBSITE & ZONAL RULES:
+- Pickup ZIP Codes: 00184, 00186, 00187 only.
+- Out-of-Zone: For Hilton EUR or Airport, suggest meeting at Piazza Mattei.
+- Tours: Highlights (3h), Night (2h), Secret Rome (3h).
+- Comforts: Bottled water, rain covers, and blankets.
+
+MANDATORY CONSTRAINTS:
+1. NO ITALIAN: Strictly English only.
+2. NO PRICES: Use ONLY the placeholder €[price].
+3. EMOTION: One brief, formal sentence only.
+4. PIVOT: Always move from the guest's request to our logistical solution seamlessly.`;
 
         try {
             const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -80,15 +99,15 @@
             resDiv.innerText = data.choices[0].message.content.trim();
             status.innerText = "Guideline generated.";
         } catch (e) {
-            resDiv.innerText = "Error. Check Key.";
+            resDiv.innerText = "System Error. Check Key.";
         } finally { btn.disabled = false; }
     }
 
     function copyText() {
         navigator.clipboard.writeText(document.getElementById('responseText').innerText);
-        const btn = document.getElementById('copyBtn');
-        btn.innerText = "COPIED";
-        setTimeout(() => { btn.innerText = "COPY DRAFT"; }, 2000);
+        const copyBtn = document.getElementById('copyBtn');
+        copyBtn.innerText = "COPIED";
+        setTimeout(() => { copyBtn.innerText = "COPY DRAFT"; }, 2000);
     }
 </script>
 </body>
