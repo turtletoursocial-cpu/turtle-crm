@@ -1,115 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CRM Customer Communications Guideline</title>
-    <style>
-        :root { --t-green: #1a3a1a; --t-gold: #b08d57; --t-light: #fdfdfb; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f0f1ed; display: flex; justify-content: center; padding: 20px; color: #2c2c2c; }
-        .container { background: white; padding: 40px; border-radius: 2px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 750px; border-top: 6px solid var(--t-green); }
-        .header { text-align: center; margin-bottom: 35px; border-bottom: 1px solid #eee; padding-bottom: 25px; }
-        .logo { max-width: 180px; margin-bottom: 15px; }
-        h2 { text-transform: uppercase; letter-spacing: 3px; font-weight: 300; font-size: 14px; color: var(--t-green); margin: 0; }
-        .key-input { width: 100%; padding: 12px; margin-bottom: 25px; border: 1px solid #e0e0e0; border-radius: 0; font-size: 11px; background: var(--t-light); color: #888; text-align: center; }
-        textarea { width: 100%; height: 220px; padding: 20px; border: 1px solid #d1d1d1; border-radius: 0; box-sizing: border-box; font-size: 15px; margin-bottom: 20px; line-height: 1.6; background: #fff; }
-        button { background: var(--t-green); color: white; padding: 18px; border: none; cursor: pointer; width: 100%; text-transform: uppercase; font-weight: 700; letter-spacing: 2px; transition: all 0.4s ease; }
-        button:hover { background: #2a5a2a; box-shadow: 0 5px 15px rgba(26,58,26,0.2); }
-        #output { margin-top: 35px; padding: 30px; border: 1px solid #eef0eb; background: var(--t-light); display: none; position: relative; font-size: 15px; line-height: 1.8; color: #333; }
-        .copy-btn { position: absolute; top: 15px; right: 15px; font-size: 10px; background: var(--t-gold); color: white; border: none; padding: 6px 12px; cursor: pointer; font-weight: bold; }
-        .status { font-size: 11px; color: #999; margin-top: 15px; text-align: center; font-style: italic; letter-spacing: 1px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turtle Tour Rome — CRM Tool</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1A1714; --ink2: #5C5650; --ink3: #9E9990;
+    --gold: #B07D2A; --gold-light: #F9F3E8; --gold-bd: #DEC98A;
+    --cream: #FAF8F4; --white: #FFFFFF;
+    --border: #E8E4DC; --border2: #D0CBC0;
+    --green: #2E6B49; --red: #8B2020; --r: 4px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; padding: 2rem 1rem 4rem; }
+  .wrapper { max-width: 760px; margin: 0 auto; }
+
+  /* HEADER */
+  .header { display: flex; align-items: center; gap: 18px; margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border); }
+  .emblem { width: 52px; height: 52px; border-radius: 50%; background: var(--gold-light); border: 1px solid var(--gold-bd); display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+  .brand-name { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 600; color: var(--ink); line-height: 1.1; }
+  .brand-sub { font-size: 11px; color: var(--ink3); text-transform: uppercase; letter-spacing: .1em; margin-top: 5px; }
+
+  /* API GATE */
+  .api-gate { background: var(--white); border: 1px solid var(--gold-bd); border-radius: 8px; padding: 32px; margin-bottom: 2rem; box-shadow: 0 4px 15px rgba(0,0,0,.05); }
+  .gate-title { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 600; margin-bottom: 10px; }
+  .gate-row { display: flex; gap: 10px; margin-top: 20px; }
+  .gate-input { flex: 1; border: 1px solid var(--border2); border-radius: var(--r); padding: 12px 16px; font-family: inherit; font-size: 14px; outline: none; background: var(--cream); }
+  .btn-gold { background: var(--gold); color: var(--white); border: none; padding: 12px 24px; border-radius: var(--r); font-weight: 500; cursor: pointer; transition: 0.2s; }
+  .btn-gold:hover { opacity: 0.85; }
+
+  /* MAIN TOOL */
+  .key-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; background: #EDF7F1; border: 1px solid #A8D9BC; font-size: 11px; color: var(--green); font-weight: 600; margin-bottom: 1.5rem; cursor: pointer; }
+  .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; color: var(--ink3); margin-bottom: 10px; }
+  textarea { width: 100%; border: 1px solid var(--border2); border-radius: var(--r); padding: 18px; font-family: inherit; font-size: 15px; min-height: 160px; line-height: 1.6; outline: none; margin-bottom: 15px; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
+  textarea:focus { border-color: var(--gold); }
+  .btn-primary { background: var(--ink); color: var(--white); border: none; padding: 14px 28px; border-radius: var(--r); font-size: 15px; font-weight: 500; cursor: pointer; transition: 0.2s; }
+  .btn-primary:hover { opacity: 0.9; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* RESPONSE AREA */
+  .resp-section { margin-top: 2rem; }
+  .resp-card { border: 1px solid var(--gold-bd); border-radius: var(--r); background: var(--white); overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .card-top { background: var(--gold-light); padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--gold-bd); }
+  .resp-text { padding: 25px; font-size: 15px; line-height: 1.85; color: var(--ink); white-space: pre-wrap; }
+  
+  /* HISTORY */
+  .history-box { margin-top: 3rem; border-top: 1px solid var(--border); padding-top: 2rem; }
+  .hist-item { background: var(--white); border: 1px solid var(--border); padding: 12px; margin-bottom: 8px; border-radius: var(--r); cursor: pointer; font-size: 13px; color: var(--ink2); transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hist-item:hover { background: var(--gold-light); border-color: var(--gold-bd); }
+
+  .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; display: inline-block; vertical-align: middle; margin-right: 10px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <img src="https://turtletourrome.com/wp-content/uploads/2021/03/Turtle-tour-Logo-ok.png" alt="Turtle Tour Rome" class="logo">
-        <h2>CRM Customer Communications Guideline</h2>
+<div class="wrapper">
+  <div class="header">
+    <div class="emblem">🐢</div>
+    <div>
+      <div class="brand-name">Turtle Tour Rome</div>
+      <div class="brand-sub">Premium Operations & CRM Tool</div>
     </div>
-    <input type="password" id="apiKey" class="key-input" placeholder="ACCESS KEY REQUIRED" onchange="saveKey()">
-    <textarea id="userInput" placeholder="Paste incoming guest message or inquiry here..."></textarea>
-    <button onclick="generate()" id="mainBtn">Generate Draft Guideline</button>
-    <div id="status" class="status"></div>
-    <div id="output">
-        <button onclick="copyText()" id="copyBtn" class="copy-btn">COPY DRAFT</button>
-        <div id="responseText" style="white-space: pre-wrap;"></div>
+  </div>
+
+  <div class="api-gate" id="apiGate">
+    <div class="gate-title">System Initialization</div>
+    <p style="font-size: 14px; color: var(--ink2);">Please enter your Groq API Key (starts with gsk_) to connect.</p>
+    <div class="gate-row">
+      <input class="gate-input" type="password" id="apiKeyInput" placeholder="Paste gsk_... key here">
+      <button class="btn-gold" onclick="saveKey()">Connect Engine →</button>
     </div>
+  </div>
+
+  <div id="mainTool" style="display:none">
+    <div class="key-badge" onclick="resetKey()">● ENGINE ACTIVE (Click to update key)</div>
+    
+    <div class="section-label">Paste Customer Request</div>
+    <textarea id="qInput" placeholder="Paste the email or message from the customer here..."></textarea>
+    
+    <button class="btn-primary" id="genBtn" onclick="generate()">✦ Generate Professional Response</button>
+
+    <div class="resp-section" id="respSection" style="display:none">
+      <div class="section-label">Suggested Draft</div>
+      <div class="resp-card">
+        <div class="card-top">
+          <span style="font-size:11px; font-weight:700; color:var(--gold);">REFINED RESPONSE</span>
+          <button style="background:var(--white); border:1px solid var(--gold-bd); padding:5px 12px; cursor:pointer; font-size:12px; font-family:inherit; border-radius:4px;" onclick="copyResp()">⎘ Copy to Clipboard</button>
+        </div>
+        <div id="respText" class="resp-text"></div>
+      </div>
+    </div>
+
+    <div class="history-box" id="historyBox" style="display:none">
+      <div class="section-label">Recent Drafts</div>
+      <div id="histList"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-    window.onload = () => { 
-        const savedKey = localStorage.getItem('t_key');
-        if (savedKey) document.getElementById('apiKey').value = savedKey; 
-    };
+const SYSTEM_PROMPT = `You are the lead CRM specialist for Turtle Tour Rome. Your goal is to write premium, warm, but definitive emails that never "shut down" a customer.
 
-    function saveKey() { localStorage.setItem('t_key', document.getElementById('apiKey').value); }
+FINITE LANGUAGE GUARDRAILS:
+- Use "Confirming" instead of "We are pleased to inform you that we have"
+- Use "Please use" instead of "You are welcome to use"
+- Use "Meet at" instead of "Kindly note that the meeting point is"
+- Use "Tour starts at" instead of "Please be advised that the tour will start at"
+- Use "Note:" instead of "Please take note that"
+- Use "Arrive at" instead of "We kindly ask that you arrive at"
+- Use "Questions:" instead of "Should you have any questions"
+- Use "Wear" instead of "We recommend that you wear"
 
-    async function generate() {
-        const key = document.getElementById('apiKey').value;
-        const input = document.getElementById('userInput').value;
-        const outBox = document.getElementById('output');
-        const resDiv = document.getElementById('responseText');
-        const btn = document.getElementById('mainBtn');
-        const status = document.getElementById('status');
+STRATEGIC EXPLORATION:
+1. NO "NO" ANSWERS: Do not say "We cannot assist." If a request is outside current offerings, reframe it as a solution or ask a question to find an alternative.
+2. APPIAN WAY/AQUADUCTS: Explain what they WILL see and offer a "Hybrid route" or "Extension" rather than denying.
+3. FULLY BOOKED/LEAD RETENTION: Offer alternative dates or suggest a trusted partner.
+4. ADDING PEOPLE: Confirm warmly. Use "securely charge the card on file".
+5. CANCELLATIONS/INJURY: Lead with deep, human empathy first. Confirm action immediately.
 
-        if(!key || !input) return alert("System Key and Message Required.");
+OPERATIONAL PROTOCOLS:
+- B2B/NEW PARTNERS: Attach 2026 NET rates. Mention 3-seater and 5-seater carts. All tours private. Times: AM (9-10), PM (3-4), Eve (8pm). No Appian/Food on Sun/Mon. Requirement: Prepayment + cc: bookings.turtletourrome@gmail.com.
+- PICKUP: Center ZIPs are 00184, 00186, 00187. If outside or pedestrian zones, offer a meeting point like Piazza Mattei.
+- POLICY: Website (48h), Viator/GYG (24h). 
 
-        btn.disabled = true;
-        status.innerText = "Applying guideline logic and drafting...";
-        outBox.style.display = "block";
-        resDiv.innerText = "";
+TONE: Premium, hospitality-focused, concise.
+FORMAT: Output ONLY the email body. No preamble. Always end with an explorative question.`;
 
-        const prompt = `Role: Senior Operations Manager at Turtle Tour Rome.
-Context: You are responding to customer interactions for a premium, eco-friendly golf cart tour company based in Rome.
-Style: Professional, warm, natural, operationally confident, and frictionless English. No overly corporate, sterile, or awkward phrasing.
+let API_KEY = localStorage.getItem('turtle_groq_key') || '';
+let historyData = [];
 
-CORE COMMUNICATION & CONVERSION PRINCIPLES:
-1. EXISTING RESERVATION SAFEGUARDS: If an incoming message indicates the customer already has a locked-in reservation (e.g., "I have a reservation", "already booked"), you MUST strip out all cold acquisition sales funnels, links to the home page, generic pricing quotes, or general booking instructions. Transition the entire interaction into pure operational reassurance, appreciation, and premium welcoming hospitality.
-2. INTERNAL ADVOCACY & RESERVATION TRACKING: When guests ask to prioritize specific itinerary elements (like photo stops or landmark alterations), explicitly state that you are manually updating their internal operational files or adding an explicit priority note to their reservation profile to show active human care.
-3. PRECISE VEHICLE ASSIGNMENTS: Do not use multi-cart separation language for standard family sizes (e.g., 4-5 people) who request to stay together. Explicitly confirm that they have been allocated to a single larger golf cart to guarantee their family unit remains fully intact. Reserve multi-cart fleet allocation explanations strictly for groups that mathematically exceed single-vehicle capacities (groups of 6-8+).
-4. DEEP GEOGRAPHIC & CULTURAL MIRRORING: Deeply validate and mirror the client's unique journey demographics (e.g., country of origin, traveling with kids, celebrating milestones) back to them. Infuse imaginative, elevated travel concepts (e.g., refer to Rome as the "Eternal City" or highlight "creating unforgettable memories") to align with their travel excitement.
-5. MATCHING STRUCTURAL ALIGNMENT: If a customer structures their email with an explicit sequence of questions, mirror that exact sequential format back to them (using numbered lines or matching headings) to minimize reading friction.
-6. HIGH-SEASON PRESSURE DESIGN: For unbooked inquiries in peak summer months (June–August), design conversion momentum by noting that schedules are managed strictly on a "first-come, first-served basis" due to extreme high-season pressure. Always state: "at the time of this email we currently have availability" to emphasize urgency, and link to the specific tour landing page (e.g., https://turtletourrome.com/rome-higlights-by-golf-cart/) rather than the generic homepage.
-7. MULTI-CART FLEET ALLOCATION RULES: Never promise exact identical vehicles for larger groups (e.g., groups of 6-8+). Explain operationally that logistics are handled smoothly via an optimized combination of larger and smaller eco-friendly golf carts dynamically assigned by our operations team prior to departure for maximum customer comfort.
-8. CLIMATIC & VALUE-BASED SLOTTING: Frame night/evening tours proactively with experiential justification. Emphasize that summer evening slots (8:00 PM onwards) provide far more comfortable ambient temperatures, avoid harsh daytime crowds, and offer a completely transformed atmosphere as the historical monuments are beautifully illuminated.
-9. FINITE WORDING AND ACTION PATHS: Use direct, non-optional, finite sentence foundations (e.g., use "Confirming", "Meet at", "Please use", "Questions:"). If a customer query requires specific data points (tour type, start time, hotel), trigger a precise diagnostic question trifecta instantly before talk of pricing.
-10. POLICY RISK MITIGATION (ZONAL & CANCELLATIONS): 
-   - Hotel Pickup: Always qualify pickup guarantees inside the historic center with operational clauses: "subject to local historical traffic access regulations and vehicle accessibility at your accommodation."
-   - Cancellation: When cancellation details are asked, explicitly list the firm parameters: Cancel up to 48 hours prior for a full refund; no cancellations, structural amendments, or rescheduling can be accommodated within 48 hours of departure.
-11. BALANCED CUSTOMIZATION EXPECTATIONS: Validate custom sights warmly, but frame them structurally. Defend our curated itineraries as meticulously balanced metrics of landmarks, historical depth, and navigational efficiency, while noting preferences can be cleanly submitted via the website's booking notes section.
-12. PRICING BUFFER FRAMEWORK: When providing total investment estimates, frame them dynamically: "For the most accurate pricing, please refer to our website as rates are updated in real time. At the moment, the total appears to be approximately €[price]."
-13. LANGUAGE BASES: Treat fluent English tours as our absolute structural operational default ("All of our tours are conducted in English unless requesting another language").
+if (API_KEY) {
+  document.getElementById('apiGate').style.display = 'none';
+  document.getElementById('mainTool').style.display = 'block';
+}
 
-MANDATORY CONSTRAINTS:
-1. LANG: Strictly natural, elegant English. No robotic phrasing.
-2. FINANCIALS: Only use the placeholder €[price] within a pricing buffer text framework if a cold prospect's configuration is fully known. If a client is already booked or a variable is missing, do not reference pricing structures at all.
-3. REPLICABILITY: Output an immediately clear, premium, formatted client text that looks like a hand-crafted executive draft ready to send.`;
+function saveKey() {
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if (val.startsWith('gsk_')) {
+    localStorage.setItem('turtle_groq_key', val);
+    location.reload();
+  } else {
+    alert("Invalid Key. Please ensure it starts with gsk_");
+  }
+}
 
-        try {
-            const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                method: "POST",
-                headers: { "Authorization": "Bearer " + key, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    model: "llama-3.3-70b-versatile",
-                    messages: [{role:"system", content: prompt}, {role:"user", content: input}],
-                    temperature: 0.1
-                })
-            });
-            const data = await response.json();
-            resDiv.innerText = data.choices[0].message.content.trim();
-            status.innerText = "Guideline generated.";
-        } catch (e) {
-            resDiv.innerText = "System Error. Check Key.";
-        } finally { btn.disabled = false; }
-    }
+function resetKey() {
+  if(confirm("Change API Key?")) {
+    localStorage.removeItem('turtle_groq_key');
+    location.reload();
+  }
+}
 
-    function copyText() {
-        navigator.clipboard.writeText(document.getElementById('responseText').innerText);
-        const copyBtn = document.getElementById('copyBtn');
-        copyBtn.innerText = "COPIED";
-        setTimeout(() => { copyBtn.innerText = "COPY DRAFT"; }, 2000);
-    }
+async function generate() {
+  const input = document.getElementById('qInput').value.trim();
+  if (!input) return;
+
+  const btn = document.getElementById('genBtn');
+  const text = document.getElementById('respText');
+  const section = document.getElementById('respSection');
+
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Crafting Response...';
+  section.style.display = 'block';
+  text.innerText = "Applying Turtle Tour policies & strategy...";
+
+  const url = `https://api.groq.com/openai/v1/chat/completions`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: input }
+        ],
+        temperature: 0.5
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || "Connection Error");
+
+    const result = data.choices[0].message.content;
+    text.innerText = result;
+    
+    historyData.unshift({q: input, r: result});
+    updateHistory();
+
+  } catch (err) {
+    text.innerText = "⚠️ ERROR: " + err.message + "\n\nPlease check your Groq API key or internet connection.";
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '✦ Generate Professional Response';
+  }
+}
+
+function copyResp() {
+  const content = document.getElementById('respText').innerText;
+  navigator.clipboard.writeText(content);
+  const btn = document.querySelector('.card-top button');
+  btn.innerText = "✓ Copied!";
+  setTimeout(() => btn.innerText = "⎘ Copy to Clipboard", 2000);
+}
+
+function updateHistory() {
+  const box = document.getElementById('historyBox');
+  const list = document.getElementById('histList');
+  if (historyData.length > 0) box.style.display = 'block';
+  
+  list.innerHTML = historyData.slice(0, 5).map((item, idx) => `
+    <div class="hist-item" onclick="loadHist(${idx})">
+      <strong>${item.q.substring(0, 50)}...</strong>
+    </div>
+  `).join('');
+}
+
+function loadHist(idx) {
+  const item = historyData[idx];
+  document.getElementById('qInput').value = item.q;
+  document.getElementById('respText').innerText = item.r;
+  document.getElementById('respSection').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 </script>
+
 </body>
 </html>
